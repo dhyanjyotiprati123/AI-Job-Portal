@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { connectDB } from "@/lib/db";
@@ -77,7 +78,7 @@ export async function POST(req){
              path: "user",
              model: User,
           });
-          
+
           if(!student){
              return NextResponse.json({message:"Student Not Found"}, {status:400})
           };
