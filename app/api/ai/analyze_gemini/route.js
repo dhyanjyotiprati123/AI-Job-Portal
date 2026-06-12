@@ -72,7 +72,12 @@ export async function POST(req){
 
        try {
           parsedResult = JSON.parse(cleanText);
-          const student = await Student.findOne({user: decode.id});
+          const student = await Student.findOne({ user: decode.id })
+            .populate({
+             path: "user",
+             model: User,
+          });
+          
           if(!student){
              return NextResponse.json({message:"Student Not Found"}, {status:400})
           };
