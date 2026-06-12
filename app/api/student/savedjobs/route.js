@@ -20,8 +20,11 @@ export async function GET() {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const student = await Student.findOne({ user: decoded.id })
-      .populate("savedJobs")
-      .select("savedJobs");
+       .populate({
+            path: "savedJobs",
+            model: Job,
+         })
+          .select("savedJobs");
 
     if (!student) {
       return NextResponse.json({ message: "Student not found" },{ status: 404 });
