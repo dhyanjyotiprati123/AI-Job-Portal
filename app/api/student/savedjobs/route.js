@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { Student } from "@/models/student";
+import { Job } from "@/models/job";
 
 export async function GET() {
   try {

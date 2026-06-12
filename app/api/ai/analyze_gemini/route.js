@@ -4,7 +4,8 @@ import { connectDB } from "@/lib/db";
 import { GoogleGenAI } from "@google/genai";
 import pdfParse from "pdf-parse";
 import { Student } from "@/models/student";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { User } from "@/models/user";
 
 const ai =new GoogleGenAI({
     apiKey: process.env.GOOGLE_API_KEY
@@ -24,8 +25,6 @@ export async function POST(req){
         const decode = jwt.verify(token, process.env.JWT_SECRET)
 
         const { resumeUrl } = await req.json();
-
-        console.log(resumeUrl)
 
         const response = await fetch(resumeUrl);
 
