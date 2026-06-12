@@ -7,6 +7,7 @@ import { Recruiter } from "@/models/recruiter";
 import { Student } from "@/models/student";
 import { Application } from "@/models/application";
 import { Notification } from "@/models/notification";
+import { Job } from "@/models/job";
 
 export async function GET() {
   try {
