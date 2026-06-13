@@ -32,7 +32,7 @@ export async function GET() {
 
     return NextResponse.json(student, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: error.message },{ status: 500 });}
+    return NextResponse.json({ message:`Server Error ${error.message}`},{ status: 500 });}
 }
 
 export async function PUT(req) {
@@ -70,9 +70,6 @@ export async function PUT(req) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message:`Server Error ${error.message}`},{ status: 500 });
   }
 }

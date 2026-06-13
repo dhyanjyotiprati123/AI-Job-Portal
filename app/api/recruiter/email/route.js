@@ -12,7 +12,7 @@ export async function PUT(req){
 
         const { newEmail, emailPassword } = await req.json();
 
-        if(!newEmail || !password){
+        if(!newEmail || !emailPassword){
             return NextResponse.json({message: "All Fields Are Required"}, {status: 401})
         }
 
