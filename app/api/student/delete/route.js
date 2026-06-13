@@ -69,8 +69,8 @@ export async function DELETE(req) {
       );
     }
 
-    cookieStore.delete("token");
     await User.findByIdAndDelete(id);
+     cookieStore.delete("token");
 
     return NextResponse.json({ message: "Account Deleted" },{ status: 200 });
 
