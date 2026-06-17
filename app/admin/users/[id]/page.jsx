@@ -12,11 +12,27 @@ import {
   FaTrash,
   FaFileAlt,
 } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
 
 export default function UserDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
   const [data, setData] = useState(null);
+  const [open, setOpen] =useState(false);
+  const [formData, setFormData] = useState({
+     name: "",
+     email: "",
+     phone: "",
+     location: "",
+     skills: "",
+     companyName: "",
+     companyEmail: "",
+     companySize: "",
+     description: "",
+     industry: "",
+     website : ""
+});
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,6 +51,99 @@ export default function UserDetailsPage() {
   };
     if (id) fetchUser();
   }, [id]);
+
+  const handleOpen = ()=>{
+    setFormData({
+      name: user?.name || "",
+      email: user?.email || "",
+
+    phone:
+      studentProfile?.phone ||
+      recruiterProfile?.phone ||
+      "",
+
+    location:
+      studentProfile?.location ||
+      recruiterProfile?.location ||
+      "",
+
+    skills:
+      studentProfile?.skills?.join(", ") ||
+      "",
+
+    companyName:
+      recruiterProfile?.companyName || "",
+
+    companyEmail:
+      recruiterProfile?.companyEmail || "",
+
+    companySize:
+      recruiterProfile?.companySize || "",
+
+    description:
+      recruiterProfile?.description || "",
+
+    industry:
+      recruiterProfile?.industry || "",
+
+    website:
+      recruiterProfile?.website || "",
+  });
+
+  setOpen(true);
+  }
+
+  const handleChange =(e)=>{
+    setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+  }
+
+  const handleUpdate = async (e) => {
+   e.preventDefault();
+
+   try {
+    const res = await fetch(
+      `/api/admin/users/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          ...formData,
+          skills: formData.skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        }),
+      }
+    );
+
+    const result = await res.json();
+
+    if (res.ok) {
+      alert("User Updated");
+      setOpen(false);
+
+      const refreshed = await fetch(
+        `/api/admin/users/${id}`
+      );
+
+      const refreshedData =
+        await refreshed.json();
+
+      setData(refreshedData);
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   const handleDelete = async () => {
     const confirmDelete = confirm("Delete this user?");
@@ -66,13 +175,23 @@ export default function UserDetailsPage() {
           User Details
         </h1>
 
-        <button
-          onClick={handleDelete}
-          className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow cursor-pointer"
-        >
-          <FaTrash />
-          Delete User
-        </button>
+        <div className="flex items-center gap-8 p-4">
+         <button
+           onClick={handleDelete}
+           className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow cursor-pointer"
+         >
+           <FaTrash />
+           Delete User
+         </button>
+
+         <button
+          onClick={handleOpen}
+           className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg shadow cursor-pointer"
+         >
+            <FiEdit  />
+             Edit User
+         </button>
+        </div>
       </div>
 
       {/* 👤 USER + PROFILE */}
@@ -234,6 +353,127 @@ export default function UserDetailsPage() {
         </div>
       )}
 
+
+
+{
+  open && (
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+
+      <div className="bg-white rounded-xl p-6 w-full max-w-xl">
+
+        <h2 className="text-2xl font-bold mb-4">
+          Edit User
+        </h2>
+
+        <form
+          onSubmit={handleUpdate}
+          className="space-y-4"
+        >
+
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Name"
+            className="w-full border p-3 rounded"
+          />
+
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email"
+            className="w-full border p-3 rounded"
+          />
+
+          {data?.user.role === "student" && (
+           <>
+             <input
+               type="text"
+               name="phone"
+               value={formData.phone}
+               onChange={handleChange}
+               placeholder="Phone"
+               className="w-full border p-3 rounded"
+             />
+         
+             <input
+               type="text"
+               name="location"
+               value={formData.location}
+               onChange={handleChange}
+               placeholder="Location"
+               className="w-full border p-3 rounded"
+             />
+         
+             <textarea
+               name="skills"
+               value={formData.skills}
+               onChange={handleChange}
+               placeholder="React, Node, MongoDB"
+               className="w-full border p-3 rounded"
+               rows={4}
+             />
+           </>
+         )}
+
+         {data?.user.role === "recruiter" && (
+         <>
+           <input
+             type="text"
+             name="companyName"
+             value={formData.companyName}
+             onChange={handleChange}
+             placeholder="Company Name"
+             className="w-full border p-3 rounded"
+           />
+
+           <input
+             type="text"
+             name="phone"
+             value={formData.phone}
+             onChange={handleChange}
+             placeholder="Phone"
+             className="w-full border p-3 rounded"
+           />
+
+           <input
+             type="text"
+             name="location"
+             value={formData.location}
+             onChange={handleChange}
+             placeholder="Location"
+             className="w-full border p-3 rounded"
+           />
+         </>
+       )}
+
+      <div className="flex justify-end gap-3 pt-4">
+
+      <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="px-4 py-2 border rounded"
+      >
+          Cancel
+      </button>
+
+      <button
+          type="submit"
+          className="bg-indigo-600 text-white px-4 py-2 rounded"
+          onClick={handleUpdate}
+      >
+          Save Changes
+      </button>
+
+      </div> 
+    </form>
+    </div>
+</div>
+  )
+}
     </div>
   );
 }

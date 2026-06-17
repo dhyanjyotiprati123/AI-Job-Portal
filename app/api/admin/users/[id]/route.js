@@ -187,3 +187,99 @@ export async function DELETE(req, { params }) {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
+
+export async function PATCH(req, { params }) {
+  try {
+    await connectDB();
+
+    const { id } = await params;
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" },{ status: 401 });
+    }
+
+    const decoded = jwt.verify(token,process.env.JWT_SECRET);
+
+    if (decoded.role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" },{ status: 403 });
+    }
+
+    const body = await req.json();
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" },{ status: 404 });
+    }
+        if (body.name) {
+      user.name = body.name;
+    }
+
+    if (body.email) {
+      user.email = body.email;
+    }
+
+    await user.save();
+    
+        if (user.role === "student") {
+      const student = await Student.findOne({
+        user: id,
+      });
+
+      if (student) {
+        if (body.phone !== undefined) {
+          student.phone = body.phone;
+        }
+
+        if (body.location !== undefined) {
+          student.location = body.location;
+        }
+
+        if (body.skills !== undefined) {
+          student.skills = body.skills;
+        }
+
+        if (body.resume !== undefined) {
+          student.resume = body.resume;
+        }
+
+        await student.save();
+      }
+    }
+        if (user.role === "recruiter") {
+      const recruiter =
+        await Recruiter.findOne({
+          user: id,
+        });
+
+      if (recruiter) {
+        if (
+          body.companyName !== undefined
+        ) {
+          recruiter.companyName =
+            body.companyName;
+        }
+
+        if (body.phone !== undefined) {
+          recruiter.phone = body.phone;
+        }
+
+        if (
+          body.location !== undefined
+        ) {
+          recruiter.location =
+            body.location;
+        }
+
+        await recruiter.save();
+      }
+    }
+        return NextResponse.json({ message:"User updated successfully"},{ status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json({message:`Server error ${error.message}`,},{ status: 500 });
+  }
+}
