@@ -40,8 +40,6 @@ const ResumeAnalyzePage = () => {
     getUser();
   }, []);
 
-  console.log(user)
-
   // 🚀 Analyze Resume
   const handleAnalyze = async () => {
     try {

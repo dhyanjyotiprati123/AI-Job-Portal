@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -16,6 +17,8 @@ export default async function Navbar() {
       user = null;
     }
   }
+
+  const dashboardPath =user?.role === "admin"? "/admin" : `/dashboard/${user?.role}`;
 
   async function logout() {
     "use server";
@@ -44,7 +47,7 @@ export default async function Navbar() {
           {user ? (
             <>
               <Link
-                href={`/dashboard/${user.role}`}
+                href={dashboardPath}
                 className="px-4 py-2 border rounded cursor-pointer bg-white text-black"
               >
                 Dashboard
