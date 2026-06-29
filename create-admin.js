@@ -11,8 +11,8 @@ async function createAdmin() {
 
     console.log("✅ MongoDB Connected");
 
-    const email = "admin@example.com";
-    const password = "Admin@123";
+    const email = "admin@example.com"; // replace this email with your own email , this is just for example
+    const password = "Admin@123"; // replace this password with your own password, this is just for example
 
     const existingAdmin = await User.findOne({ email });
 
@@ -24,7 +24,7 @@ async function createAdmin() {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     await User.create({
-      name: "Administrator",
+      name: "Administrator", // replace this with your own name
       email,
       password: hashedPassword,
       role: "admin",
